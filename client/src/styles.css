@@ -1,0 +1,123 @@
+:root {
+  font-family: "Inter", system-ui, sans-serif;
+  color: #1f2a37;
+  background-color: #f7f7fb;
+}
+
+body {
+  margin: 0;
+}
+
+.app {
+  padding: 24px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.subtitle {
+  color: #5b6b7a;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.panel {
+  background: white;
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.field-label {
+  font-weight: 600;
+}
+
+.input-row {
+  display: flex;
+  gap: 12px;
+}
+
+textarea {
+  flex: 1;
+  min-height: 90px;
+  resize: vertical;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d5dce5;
+}
+
+button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  background-color: #2563eb;
+  color: white;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.mic-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hint {
+  color: #64748b;
+}
+
+.note {
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.thai-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.ru-text {
+  color: #475569;
+}
+
+.ru-note {
+  padding: 8px 10px;
+  background: #fef3c7;
+  border-radius: 8px;
+  color: #92400e;
+}
+
+.checklist {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.epc-buttons,
+.phrase-bank {
+  display: grid;
+  gap: 8px;
+}
+
+.phrase-bank button {
+  text-align: left;
+  background: #0f766e;
+}
+
+.audio-status {
+  color: #64748b;
+}
