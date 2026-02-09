@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ThaiSpaEPC_Static_PE - Taa Chatbot</title>
+  <style>
+    :root {
+      --bg: #e9f7e9;
+      --panel: #ffffff;
+      --accent: #2c7a2c;
+      --muted: #5b6b5b;
+      --warn: #b45309;
+      --danger: #b91c1c;
+      --shadow: 0 2px 8px rgba(0,0,0,0.08);
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: #1d2a1d;
+    }
+
+    header {
+      padding: 16px 20px 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    header h1 {
+      font-size: 20px;
+      margin: 0;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #f0f5ff;
+      color: #1a3a75;
+      font-size: 12px;
+      border: 1px solid #c7dcff;
+    }
+
+    .badge.warn {
+      background: #fff7ed;
+      color: #7c2d12;
+      border-color: #fed7aa;
+    }
+
+    .app {
+      padding: 0 16px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .tabs {
+      display: none;
+      gap: 8px;
+      margin: 8px 0 16px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #cbd5cb;
+      background: #f8faf8;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: #d6f5d6;
+      border-color: #9ed59e;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .panel h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #cbd5cb;
+      resize: vertical;
+      font-size: 15px;
+    }
+
+    button {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #cbd5cb;
+      background: #f8faf8;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button.primary {
+      background: #2c7a2c;
+      color: white;
+      border-color: #2c7a2c;
+    }
+
+    button.danger {
+      background: #dc2626;
+      color: white;
+      border-color: #b91c1c;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .status {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .status.warn { color: var(--warn); }
+    .status.danger { color: var(--danger); }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #ecfdf3;
+      border: 1px solid #bbf7d0;
+      font-size: 12px;
+      color: #166534;
+      gap: 6px;
+    }
+
+    .section {
+      border-top: 1px dashed #cbd5cb;
+      padding-top: 10px;
+    }
+
+    .subtext {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .phrase-bank {
+      display: grid;
+      gap: 8px;
+    }
+
+    .phrase-item {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #d1e7d1;
+      background: #f6fff6;
+      cursor: pointer;
+    }
+
+    .phrase-item span {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .chat-area {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 320px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .turn {
+      border: 1px solid #e2e8e2;
+      border-radius: 10px;
+      padding: 8px 10px;
+      background: #f9fbf9;
+    }
+
+    .turn.bot { border-left: 4px solid #38a169; }
+    .turn.learner { border-left: 4px solid #3182ce; }
+
+    .turn-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .turn-content {
+      margin: 6px 0 0;
+      font-size: 15px;
+    }
+
+    .turn-footer {
+      margin-top: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .checklist {
+      display: grid;
+      gap: 6px;
+    }
+
+    .coach-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    details {
+      border: 1px solid #cbd5cb;
+      border-radius: 10px;
+      padding: 8px 12px;
+      background: #f8faf8;
+    }
+
+    details summary {
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .tooltip {
+      display: none;
+      background: #0f172a;
+      color: #f8faf8;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      position: absolute;
+      transform: translateY(-130%);
+      z-index: 10;
+    }
+
+    .tooltip.show { display: inline-block; }
+
+    @media (min-width: 900px) {
+      .grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 899px) {
+      .tabs { display: flex; }
+      .panel { display: none; }
+      .panel.active { display: flex; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>ThaiSpa EPC Coach · ทา (Taa)</h1>
+      <div class="subtext">Beginner Thai spa chatbot · offline-friendly · progressive enhancement</div>
+    </div>
+    <div class="row">
+      <span id="mode-pill" class="pill">Mode: Text only</span>
+      <span id="chrome-badge" class="badge">Chrome recommended for voice</span>
+    </div>
+  </header>
+
+  <div class="app">
+    <div class="tabs" role="tablist">
+      <button class="tab-btn active" data-target="learner-panel" role="tab">Practice</button>
+      <button class="tab-btn" data-target="bot-panel" role="tab">Chat</button>
+      <button class="tab-btn" data-target="coach-panel" role="tab">Review</button>
+    </div>
+
+    <div class="grid">
+      <section id="learner-panel" class="panel active" aria-labelledby="learner-title">
+        <h2 id="learner-title">A) Learner</h2>
+        <label for="learner-input" class="subtext">พิมพ์ภาษาไทยที่นี่ (Type Thai here)</label>
+        <textarea id="learner-input" placeholder="เช่น สวัสดีค่ะ"></textarea>
+        <div id="recognized-display" class="subtext">Recognized Thai: —</div>
+        <div id="learner-translit" class="subtext">RU transcription: —</div>
+        <div id="learner-translation" class="subtext">RU translation: —</div>
+        <div class="row">
+          <button id="send-btn" class="primary">Send</button>
+          <button id="clear-btn">Clear</button>
+          <label class="subtext"><input type="checkbox" id="autosend-toggle" /> Auto-send</label>
+        </div>
+        <div id="mic-controls" class="row">
+          <button id="mic-start">🎙️ Start</button>
+          <button id="mic-stop" class="danger" disabled>Stop</button>
+          <span id="mic-status" class="status">Mic idle</span>
+        </div>
+        <div id="mic-error" class="status danger" aria-live="polite"></div>
+
+        <div class="section">
+          <h3 class="subtext">Phrase Bank (click to insert)</h3>
+          <div id="phrase-bank" class="phrase-bank"></div>
+        </div>
+      </section>
+
+      <section id="bot-panel" class="panel" aria-labelledby="bot-title">
+        <h2 id="bot-title">B) Bot (Taa)</h2>
+        <div class="chat-area" id="chat-area"></div>
+        <div class="section">
+          <div class="subtext">Latest Bot Reply (Thai)</div>
+          <div id="bot-thai" class="turn-content">—</div>
+          <div id="bot-translit" class="subtext">RU transcription: —</div>
+          <div id="bot-translation" class="subtext">RU translation: —</div>
+          <div id="bot-note" class="status"></div>
+        </div>
+        <div class="row" style="position: relative;">
+          <button id="speak-btn">🔊 Speak</button>
+          <button id="repeat-btn">Repeat</button>
+          <button id="copy-btn">Copy Thai</button>
+          <span id="audio-tooltip" class="tooltip">Tap once anywhere to enable audio</span>
+        </div>
+      </section>
+
+      <section id="coach-panel" class="panel" aria-labelledby="coach-title">
+        <h2 id="coach-title">C) EPC Coach</h2>
+        <div class="checklist">
+          <label><input type="checkbox" checked disabled /> Plan</label>
+          <label><input type="checkbox" /> Practice</label>
+          <label><input type="checkbox" /> Transfer</label>
+          <label><input type="checkbox" /> Reflect</label>
+        </div>
+        <div class="section">
+          <div class="subtext">Scaffolding prompts</div>
+          <div class="coach-buttons">
+            <button data-inject="ช่วยทำให้ประโยคง่ายขึ้นค่ะ">Simplify</button>
+            <button data-inject="ช่วยทำให้สุภาพขึ้นค่ะ">More polite</button>
+            <button data-inject="ช่วยแก้ให้เบา ๆ หน่อยค่ะ">Correct me gently</button>
+            <button data-inject="ขอ 3 แบบได้ไหมคะ">3 variants</button>
+            <button data-inject="ต่อไปควรพูดอะไรดีคะ">What next?</button>
+          </div>
+        </div>
+        <div class="section">
+          <div class="subtext">Session log (last 10 turns)</div>
+          <div id="session-log" class="subtext">No turns yet.</div>
+        </div>
+
+        <details id="run-locally">
+          <summary>⚙️ Run Locally</summary>
+          <div class="subtext">
+            Если микрофон не работает или страница открыта как file:/// , запустите локальный сервер:
+            <ul>
+              <li>macOS: <code>python3 -m http.server 8000</code></li>
+              <li>Windows: <code>py -m http.server 8000</code></li>
+            </ul>
+            Откройте: <code>http://localhost:8000/index.html</code><br />
+            Браузеры часто блокируют микрофон для file:/// и небезопасных контекстов.
+          </div>
+        </details>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const supports = {
+      speechRecognition: !!(window.SpeechRecognition || window.webkitSpeechRecognition),
+      tts: 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window,
+      localStorage: (() => {
+        try {
+          localStorage.setItem('_t', '1');
+          localStorage.removeItem('_t');
+          return true;
+        } catch (e) {
+          return false;
+        }
+      })(),
+      clipboard: !!navigator.clipboard,
+      isSecureContext: window.isSecureContext,
+    };
+
+    const state = {
+      mode: 'C',
+      audioUnlocked: false,
+      recognition: null,
+      lastBot: null,
+      sessionTurns: [],
+      voicesReady: false,
+    };
+
+    const phraseBankData = [
+      { thai: 'สวัสดีค่ะ', ru: 'саватди ка' },
+      { thai: 'สบายดีไหมครับ/ค่ะ', ru: 'сабай ди май кхрап/кха' },
+      { thai: 'ผมชื่อคอนสแตนตินครับ', ru: 'пхом чьы Константин кхрап' },
+      { thai: 'ฉันชื่อทาค่ะ', ru: 'чан чьы та ка' },
+      { thai: 'ผมอยากนวดเท้าครับ', ru: 'пхом як нуат тхао кхрап' },
+      { thai: 'นี่เป็นครั้งแรกของผมครับ', ru: 'ни пен кхран рэк кхнг пхом кхрап' },
+      { thai: 'ขอบคุณครับ/ค่ะ', ru: 'кхоп кхун кхрап/кха' },
+      { thai: 'คุณนวดเท้าดีมากเลยครับ/ค่ะ', ru: 'кхун нуат тхао ди мак лёй кхрап/кха' },
+      { thai: 'พรุ่งนี้ผมจะกลับมาครับ', ru: 'пхрунг-ни пхом ча клап ма кхрап' },
+      { thai: 'แล้วเจอกันครับ/ค่ะ', ru: 'лэо чёр кан кхрап/кха' },
+    ];
+
+    const translitDict = {
+      'สวัสดีค่ะ': 'саватди ка',
+      'สบายดีไหมครับ/ค่ะ': 'сабай ди май кхрап/кха',
+      'ผมชื่อคอนสแตนตินครับ': 'пхом чьы Константин кхрап',
+      'ฉันชื่อทาค่ะ': 'чан чьы та ка',
+      'ผมอยากนวดเท้าครับ': 'пхом як нуат тхао кхрап',
+      'นี่เป็นครั้งแรกของผมครับ': 'ни пен кхран рэк кхнг пхом кхрап',
+      'ขอบคุณครับ/ค่ะ': 'кхоп кхун кхрап/кха',
+      'คุณนวดเท้าดีมากเลยครับ/ค่ะ': 'кхун нуат тхао ди мак лёй кхрап/кха',
+      'พรุ่งนี้ผมจะกลับมาครับ': 'пхрунг-ни пхом ча клап ма кхрап',
+      'แล้วเจอกันครับ/ค่ะ': 'лэо чёр кан кхрап/кха',
+      'นวด': 'нуат',
+      'นวดไทย': 'нуат тай',
+      'นวดเท้า': 'нуат тхао',
+      'จ่าย': 'чай',
+      'ค่า': 'кха',
+      'เท่าไหร่': 'тхао рай',
+      'พรุ่งนี้': 'пхрунг-ни',
+      'เจอกัน': 'чёр кан',
+      'ขอบคุณ': 'кхоп кхун',
+      'ดีมาก': 'ди мак',
+      'สบายดีไหม': 'сабай ди май',
+      'สวัสดี': 'саватди',
+      'คุณ': 'кхун',
+      'ผม': 'пхом',
+      'ฉัน': 'чан',
+      'ค่ะ': 'кха',
+      'ครับ': 'кхрап',
+      'อยาก': 'як',
+      'เท้า': 'тхао',
+      'ดี': 'ди',
+      'มาก': 'мак',
+      'พรุ่งนี้': 'пхрунг-ни',
+      'กลับมา': 'клап ма',
+    };
+
+    const translationDict = {
+      'สวัสดีค่ะ': 'Здравствуйте.',
+      'สบายดีไหมครับ/ค่ะ': 'Как вы?',
+      'ผมชื่อคอนสแตนตินครับ': 'Меня зовут Константин.',
+      'ฉันชื่อทาค่ะ': 'Меня зовут Таа.',
+      'ผมอยากนวดเท้าครับ': 'Я хочу массаж ног.',
+      'นี่เป็นครั้งแรกของผมครับ': 'Это мой первый раз.',
+      'ขอบคุณครับ/ค่ะ': 'Спасибо.',
+      'คุณนวดเท้าดีมากเลยครับ/ค่ะ': 'Вы делаете массаж ног очень хорошо.',
+      'พรุ่งนี้ผมจะกลับมาครับ': 'Завтра я вернусь.',
+      'แล้วเจอกันครับ/ค่ะ': 'До встречи.',
+      'นวด': 'массаж',
+      'นวดไทย': 'тайский массаж',
+      'นวดเท้า': 'массаж ног',
+      'จ่าย': 'платить',
+      'ค่า': 'стоимость',
+      'เท่าไหร่': 'сколько стоит',
+      'พรุ่งนี้': 'завтра',
+      'เจอกัน': 'увидимся',
+      'ขอบคุณ': 'спасибо',
+      'ดีมาก': 'очень хорошо',
+      'สบายดีไหม': 'как вы',
+      'สวัสดี': 'здравствуйте',
+      'คุณ': 'вы/вас',
+      'ผม': 'я (муж.)',
+      'ฉัน': 'я',
+      'ค่ะ': '(вежл.)',
+      'ครับ': '(вежл.)',
+      'อยาก': 'хочу',
+      'เท้า': 'ступни',
+      'ดี': 'хорошо',
+      'มาก': 'очень',
+      'กลับมา': 'вернусь',
+    };
+
+    const cannedReplies = {
+      greeting: {
+        thai: 'สวัสดีค่ะ ยินดีต้อนรับสปานะคะ',
+      },
+      howAreYou: {
+        thai: 'สบายดีค่ะ ขอบคุณที่ถามนะคะ',
+      },
+      name: {
+        thai: 'ฉันชื่อทาค่ะ ยินดีที่ได้รู้จักนะคะ',
+      },
+      fromRussia: {
+        thai: 'ยินดีต้อนรับจากรัสเซียนะคะ',
+      },
+      footMassage: {
+        thai: 'ได้ค่ะ ต้องการนวดเท้ากี่นาทีคะ',
+      },
+      firstTime: {
+        thai: 'ครั้งแรกใช่ไหมคะ ฉันจะดูแลให้อย่างสบายค่ะ',
+      },
+      compliment: {
+        thai: 'ขอบคุณมากค่ะ ฉันดีใจที่คุณพอใจนะคะ',
+      },
+      payment: {
+        thai: 'ราคานวดเท้าเริ่มที่ 300 บาทค่ะ',
+      },
+      tomorrow: {
+        thai: 'พรุ่งนี้มาสะดวกกี่โมงคะ',
+      },
+      goodbye: {
+        thai: 'ขอบคุณค่ะ แล้วพบกันใหม่นะคะ',
+      },
+      default: {
+        thai: 'ได้ค่ะ อยากให้ฉันช่วยเรื่องอะไรเพิ่มเติมคะ',
+      },
+    };
+
+    const elements = {
+      modePill: document.getElementById('mode-pill'),
+      chromeBadge: document.getElementById('chrome-badge'),
+      learnerInput: document.getElementById('learner-input'),
+      recognizedDisplay: document.getElementById('recognized-display'),
+      learnerTranslit: document.getElementById('learner-translit'),
+      learnerTranslation: document.getElementById('learner-translation'),
+      sendBtn: document.getElementById('send-btn'),
+      clearBtn: document.getElementById('clear-btn'),
+      micControls: document.getElementById('mic-controls'),
+      micStart: document.getElementById('mic-start'),
+      micStop: document.getElementById('mic-stop'),
+      micStatus: document.getElementById('mic-status'),
+      micError: document.getElementById('mic-error'),
+      phraseBank: document.getElementById('phrase-bank'),
+      chatArea: document.getElementById('chat-area'),
+      botThai: document.getElementById('bot-thai'),
+      botTranslit: document.getElementById('bot-translit'),
+      botTranslation: document.getElementById('bot-translation'),
+      botNote: document.getElementById('bot-note'),
+      speakBtn: document.getElementById('speak-btn'),
+      repeatBtn: document.getElementById('repeat-btn'),
+      copyBtn: document.getElementById('copy-btn'),
+      audioTooltip: document.getElementById('audio-tooltip'),
+      runLocally: document.getElementById('run-locally'),
+      sessionLog: document.getElementById('session-log'),
+      autosendToggle: document.getElementById('autosend-toggle'),
+      tabs: document.querySelectorAll('.tab-btn'),
+      panels: document.querySelectorAll('.panel'),
+    };
+
+    function detectBrowserHint() {
+      const ua = navigator.userAgent || '';
+      const isChrome = /Chrome|Chromium/.test(ua) && !/Edge|OPR/.test(ua);
+      const isSafari = /Safari/.test(ua) && !/Chrome|Chromium/.test(ua);
+      if (!isChrome) {
+        elements.chromeBadge.classList.add('warn');
+      }
+      elements.chromeBadge.title = isSafari ? 'Safari: speech recognition not available' : 'Chrome recommended for voice';
+    }
+
+    function determineMode() {
+      if (supports.speechRecognition && supports.tts) {
+        state.mode = 'A';
+        elements.modePill.textContent = 'Mode A: Voice + TTS';
+      } else if (supports.tts) {
+        state.mode = 'B';
+        elements.modePill.textContent = 'Mode B: TTS only';
+      } else {
+        state.mode = 'C';
+        elements.modePill.textContent = 'Mode C: Text only';
+      }
+
+      if (state.mode !== 'A') {
+        elements.micControls.style.display = 'none';
+      }
+      if (state.mode === 'C') {
+        elements.speakBtn.style.display = 'none';
+      }
+    }
+
+    function initPhraseBank() {
+      elements.phraseBank.innerHTML = '';
+      phraseBankData.forEach((item) => {
+        const div = document.createElement('div');
+        div.className = 'phrase-item';
+        div.innerHTML = `${item.thai}<span>${item.ru}</span>`;
+        div.addEventListener('click', () => {
+          elements.learnerInput.value = item.thai;
+          updateLearnerPreview(item.thai);
+          elements.learnerInput.focus();
+        });
+        elements.phraseBank.appendChild(div);
+      });
+    }
+
+    function updateLearnerPreview(text) {
+      const translit = thaiToRuTranslit(text);
+      const translation = thaiToRuTranslation(text);
+      elements.learnerTranslit.textContent = `RU transcription: ${translit}`;
+      elements.learnerTranslation.textContent = `RU translation: ${translation}`;
+    }
+
+    function thaiToRuTranslit(text) {
+      if (!text.trim()) return '—';
+      if (translitDict[text]) return translitDict[text];
+      let result = text;
+      let matched = false;
+      Object.keys(translitDict).forEach((key) => {
+        if (result.includes(key)) {
+          matched = true;
+          result = result.replaceAll(key, translitDict[key]);
+        }
+      });
+      if (!matched) {
+        return `[${text}]`;
+      }
+      return result;
+    }
+
+    function thaiToRuTranslation(text) {
+      if (!text.trim()) return '—';
+      if (translationDict[text]) return translationDict[text];
+      let result = text;
+      let matched = false;
+      Object.keys(translationDict).forEach((key) => {
+        if (result.includes(key)) {
+          matched = true;
+          result = result.replaceAll(key, translationDict[key]);
+        }
+      });
+      if (!matched) {
+        return '(перевод: уточните)';
+      }
+      return result;
+    }
+
+    function normalizeInput(text) {
+      return text.toLowerCase().replace(/[!?.,]/g, '').trim();
+    }
+
+    function taReply(input) {
+      const normalized = normalizeInput(input);
+      let intent = 'default';
+
+      if (/สวัสดี|hello|hi|sawasdee|sawadee/.test(normalized)) intent = 'greeting';
+      if (/สบายดี|how are you|sabai di|sabadji mai/.test(normalized)) intent = 'howAreYou';
+      if (/ชื่อ|name|taa|ทา/.test(normalized)) intent = 'name';
+      if (/รัสเซีย|russia/.test(normalized)) intent = 'fromRussia';
+      if (/นวดเท้า|foot massage|nuat thao/.test(normalized)) intent = 'footMassage';
+      if (/ครั้งแรก|first time/.test(normalized)) intent = 'firstTime';
+      if (/ดีมาก|great|good massage|compliment/.test(normalized)) intent = 'compliment';
+      if (/จ่าย|ราคา|เท่าไหร่|payment|pay/.test(normalized)) intent = 'payment';
+      if (/พรุ่งนี้|tomorrow/.test(normalized)) intent = 'tomorrow';
+      if (/ลาก่อน|bye|goodbye/.test(normalized)) intent = 'goodbye';
+
+      let reply = cannedReplies[intent] || cannedReplies.default;
+      const response = {
+        thai: reply.thai,
+        ru_note: '',
+      };
+
+      if (/อยากอยาก/.test(input)) {
+        response.ru_note = 'Исправление: достаточно одного "อยาก".';
+      }
+
+      response.ru_translit = thaiToRuTranslit(response.thai);
+      response.ru_translation = thaiToRuTranslation(response.thai);
+      return response;
+    }
+
+    function addTurnCard(type, thai, translit, translation, note) {
+      const turn = document.createElement('div');
+      turn.className = `turn ${type}`;
+      const header = document.createElement('div');
+      header.className = 'turn-header';
+      header.textContent = type === 'bot' ? 'Bot turn' : 'Learner turn';
+      const retry = document.createElement('button');
+      retry.textContent = 'Retry this turn';
+      retry.addEventListener('click', () => {
+        turn.classList.remove('turn-error');
+      });
+      header.appendChild(retry);
+      const content = document.createElement('div');
+      content.className = 'turn-content';
+      content.textContent = thai;
+      const footer = document.createElement('div');
+      footer.className = 'turn-footer';
+      footer.innerHTML = `RU transcription: ${translit}<br>RU translation: ${translation}`;
+      if (note) {
+        const noteEl = document.createElement('div');
+        noteEl.className = 'status warn';
+        noteEl.textContent = note;
+        footer.appendChild(noteEl);
+      }
+      turn.appendChild(header);
+      turn.appendChild(content);
+      turn.appendChild(footer);
+      elements.chatArea.appendChild(turn);
+      elements.chatArea.scrollTop = elements.chatArea.scrollHeight;
+    }
+
+    function updateSessionLog() {
+      if (state.sessionTurns.length === 0) {
+        elements.sessionLog.textContent = 'No turns yet.';
+        return;
+      }
+      elements.sessionLog.innerHTML = state.sessionTurns
+        .slice(-10)
+        .map((entry, idx) => `${idx + 1}. ${entry}`)
+        .join('<br>');
+    }
+
+    function sendMessage() {
+      const text = elements.learnerInput.value.trim();
+      if (!text) return;
+
+      const learnerTranslit = thaiToRuTranslit(text);
+      const learnerTranslation = thaiToRuTranslation(text);
+      addTurnCard('learner', text, learnerTranslit, learnerTranslation);
+      state.sessionTurns.push(`Learner: ${text}`);
+      updateSessionLog();
+
+      const reply = taReply(text);
+      state.lastBot = reply;
+      elements.botThai.textContent = reply.thai;
+      elements.botTranslit.textContent = `RU transcription: ${reply.ru_translit}`;
+      elements.botTranslation.textContent = `RU translation: ${reply.ru_translation}`;
+      elements.botNote.textContent = reply.ru_note || '';
+      addTurnCard('bot', reply.thai, reply.ru_translit, reply.ru_translation, reply.ru_note);
+      state.sessionTurns.push(`Bot: ${reply.thai}`);
+      updateSessionLog();
+    }
+
+    function clearInput() {
+      elements.learnerInput.value = '';
+      elements.learnerTranslit.textContent = 'RU transcription: —';
+      elements.learnerTranslation.textContent = 'RU translation: —';
+      elements.recognizedDisplay.textContent = 'Recognized Thai: —';
+    }
+
+    function initSpeechRecognition() {
+      if (!supports.speechRecognition) return;
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'th-TH';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      state.recognition = recognition;
+
+      recognition.addEventListener('start', () => {
+        elements.micStatus.textContent = 'Listening...';
+        elements.micError.textContent = '';
+        elements.micStart.disabled = true;
+        elements.micStop.disabled = false;
+      });
+
+      recognition.addEventListener('end', () => {
+        elements.micStatus.textContent = 'Mic idle';
+        elements.micStart.disabled = false;
+        elements.micStop.disabled = true;
+      });
+
+      recognition.addEventListener('result', (event) => {
+        const transcript = event.results[0][0].transcript;
+        elements.learnerInput.value = transcript;
+        elements.recognizedDisplay.textContent = `Recognized Thai: ${transcript}`;
+        updateLearnerPreview(transcript);
+        if (elements.autosendToggle.checked) {
+          sendMessage();
+        }
+      });
+
+      recognition.addEventListener('error', (event) => {
+        let message = 'Ошибка распознавания речи.';
+        if (event.error === 'not-allowed') {
+          message = 'Разрешите доступ к микрофону в настройках сайта';
+          elements.runLocally.open = true;
+        } else if (event.error === 'no-speech') {
+          message = 'Я не услышала — попробуйте ещё раз';
+        } else if (event.error === 'network') {
+          message = 'Ошибка сервиса распознавания речи (интернет/браузер)';
+        }
+        elements.micError.textContent = message;
+      });
+    }
+
+    function unlockAudio() {
+      if (state.audioUnlocked || !supports.tts) return;
+      state.audioUnlocked = true;
+      const utterance = new SpeechSynthesisUtterance('ค่ะ');
+      utterance.lang = 'th-TH';
+      speechSynthesis.speak(utterance);
+      speechSynthesis.cancel();
+    }
+
+    function pickVoice() {
+      const voices = speechSynthesis.getVoices();
+      if (!voices || voices.length === 0) {
+        return null;
+      }
+      return voices.find((voice) => voice.lang && voice.lang.startsWith('th')) || voices[0];
+    }
+
+    function speakThai(text) {
+      if (!supports.tts) return;
+      if (!state.audioUnlocked) {
+        elements.audioTooltip.classList.add('show');
+        setTimeout(() => elements.audioTooltip.classList.remove('show'), 2000);
+        return;
+      }
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'th-TH';
+      const voice = pickVoice();
+      if (voice) utterance.voice = voice;
+      speechSynthesis.cancel();
+      speechSynthesis.speak(utterance);
+    }
+
+    function initTabs() {
+      elements.tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          elements.tabs.forEach((btn) => btn.classList.remove('active'));
+          tab.classList.add('active');
+          const target = tab.dataset.target;
+          elements.panels.forEach((panel) => {
+            panel.classList.toggle('active', panel.id === target);
+          });
+        });
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      detectBrowserHint();
+      determineMode();
+      initPhraseBank();
+      initSpeechRecognition();
+      initTabs();
+
+      if (supports.speechRecognition && !supports.isSecureContext) {
+        elements.runLocally.open = true;
+      }
+
+      if (supports.tts) {
+        speechSynthesis.onvoiceschanged = () => {
+          state.voicesReady = true;
+        };
+      }
+    });
+
+    document.addEventListener('click', unlockAudio, { once: true });
+
+    elements.learnerInput.addEventListener('input', (event) => {
+      updateLearnerPreview(event.target.value);
+    });
+
+    elements.sendBtn.addEventListener('click', () => {
+      sendMessage();
+    });
+
+    elements.clearBtn.addEventListener('click', () => {
+      clearInput();
+    });
+
+    elements.micStart.addEventListener('click', () => {
+      if (!state.recognition) return;
+      elements.micError.textContent = '';
+      state.recognition.start();
+    });
+
+    elements.micStop.addEventListener('click', () => {
+      if (!state.recognition) return;
+      state.recognition.stop();
+    });
+
+    elements.speakBtn.addEventListener('click', () => {
+      if (state.lastBot) {
+        speakThai(state.lastBot.thai);
+      }
+    });
+
+    elements.repeatBtn.addEventListener('click', () => {
+      if (state.lastBot) {
+        speakThai(state.lastBot.thai);
+      }
+    });
+
+    elements.copyBtn.addEventListener('click', async () => {
+      if (!state.lastBot || !supports.clipboard) return;
+      try {
+        await navigator.clipboard.writeText(state.lastBot.thai);
+      } catch (error) {
+        console.error(error);
+      }
+    });
+
+    document.querySelectorAll('[data-inject]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const text = button.dataset.inject || '';
+        elements.learnerInput.value = text;
+        updateLearnerPreview(text);
+        elements.learnerInput.focus();
+      });
+    });
+  </script>
+</body>
+</html>
